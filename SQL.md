@@ -32,10 +32,13 @@ Sonuç:
 
 _Sonuç:_
 
-id fullname email
-1 Meltem Taşkıran meltem@gmail.com
-2 Okan Taşkıran okan@gmail.com
-3 Hatice Ergül hatice@gmail.com
+### Users Tablosu
+
+|  id | fullname        | email            |
+| --: | --------------- | ---------------- |
+|   1 | Meltem Taşkıran | meltem@gmail.com |
+|   2 | Okan Taşkıran   | okan@gmail.com   |
+|   3 | Hatice Ergül    | hatice@gmail.com |
 
 ## 4.Kullanıcının email adresini güncelleme — UPDATE
 
@@ -56,10 +59,13 @@ Güncel tabloyu görmek için:
 
 Sonuç:
 
-id fullname email
-1 Meltem Taşkıran meltem@gmail.com
-2 Okan Taşkıran okan@gmail.com
-3 Hatice Ergül hatice.ergul@gmail.com
+### Users Tablosu
+
+|  id | fullname        | email                  |
+| --: | --------------- | ---------------------- |
+|   1 | Meltem Taşkıran | meltem@gmail.com       |
+|   2 | Okan Taşkıran   | okan@gmail.com         |
+|   3 | Hatice Ergül    | hatice.ergul@gmail.com |
 
 ## 5. Bir kullanıcıyı silme — DELETE
 
@@ -78,25 +84,32 @@ Son durumu görmek için:
 
 `SELECT * FROM users;`
 
-id fullname email
-2 Okan Taşkıran okan@gmail.com
-3 Hatice Ergül hatice.ergul@gmail.com
+### Users Tablosu
+
+|  id | fullname      | email                  |
+| --: | ------------- | ---------------------- |
+|   2 | Okan Taşkıran | okan@gmail.com         |
+|   3 | Hatice Ergül  | hatice.ergul@gmail.com |
 
 ## INNER JOIN
 
 _INNER JOIN_, iki tablo arasında eşleşen kayıtları birleştirmek için kullanılır.
 
-users table
-id fullname email
-1 Meltem Taşkıran meltem@gmail.com
-2 Okan Taşkıran okan@gmail.com
-3 Hatice Ergül hatice@gmail.com
+### Users Tablosu
 
-orders table
+|  id | fullname        | email                  |
+| --: | --------------- | ---------------------- |
+|   1 | Meltem Taşkıran | meltem@gmail.com       |
+|   2 | Okan Taşkıran   | okan@gmail.com         |
+|   3 | Hatice Ergül    | hatice.ergul@gmail.com |
+
+### Orderss Tablosu
+
 | order_id | user_id |
-| S11 | 1 |
-| S12 | 1 |
-| S13 | 2 |
+| -------: | ------- |
+|      S11 | 1       |
+|      S12 | 1       |
+|      S13 | 2       |
 
 Sorgu
 
