@@ -126,33 +126,38 @@ SELECT ile kullanıcı adı, email ve sipariş numarasını seçiyoruz. FROM use
 
 ## Mobil Uygulama Güvenliği
 
-**a- Ekran görüntüsü ve ekran kaydı**
+**a- Ekran Görüntüsü ve Ekran Kaydı**
 
-Bankacılık uygulamalarında kart bilgileri ve bakiye gibi önemli bilgilerin ekran görüntüsünün alınmasını veya ekran kaydı yapılmasını engellemek gerekir. Çünkü bu bilgiler başka kişilerin eline geçebilir.
+- **Neden Önemli?** Kredi kartı numarası, CVV, bakiye veya OTP bildirimleri gibi hassas verilerin üçüncü taraf zararlı yazılımlar tarafından arka planda izinsiz kaydedilmesini veya kullanıcının galerisinde şifresiz şekilde depolanmasını engellemek için kritik önem taşır.
+- **Güvenlik Mekanizmaları:**
+- **Android:** Aktiviteye `FLAG_SECURE` bayrağının eklenmesi (ekran görüntüsü almayı engeller, ekran kaydında ilgili pencereyi siyah gösterir).
+- **iOS:** `UIScreen.capturedDidChangeNotification` dinlenerek ekran kaydı tespit edildiğinde arayüzün gizlenmesi veya içerik görünümünün `UITextField(isSecureTextEntry = true)` katmanları kullanılarak gizlenmesi.
 
--_Android:_ FLAG*SECURE kullanılarak ekran görüntüsü ve ekran kaydı engellenebilir. -\_iOS:* Ekran kaydı veya ekran görüntüsü algılanarak hassas bilgiler gizlenebilir.
+**b- Overlay (Üst Üste Bindirme) Saldırıları**
 
-**b- Overlay saldırıları**
+- **Nasıl Gerçekleşir?** Zararlı bir uygulama, sistemdeki "diğer uygulamaların üzerinde gösterilme" iznini kullanarak hedef uygulamanın (ör. banka uygulaması) tam üzerine şeffaf veya tamamen aynı görünen sahte bir katman (View) yerleştirir.
+- **Örnek:** Kullanıcı banka uygulamasını açtığında, saldırganın arka planda çalışan uygulaması durumu tespit edip tam o anda ekrana sahte bir "Oturum Süreniz Doldu, Lütfen Şifrenizi Girin" penceresi çıkarır. Kullanıcı veriyi ana uygulamaya girdiğini sanarak şifresini saldırgana kaptırır.
 
-Saldırgan, başka bir uygulamanın üzerine sahte bir buton veya ekran koyarak kullanıcıyı kandırabilir.
-
-Örnek: Kullanıcı bankacılık uygulamasında para gönderme butonuna bastığını düşünürken, aslında ekranda bulunan sahte butona basmış olabilir ve farklı bir işlem gerçekleşebilir.
+---
 
 **c- Root / Jailbreak**
 
-Root veya Jailbreak yapılmış cihazlarda telefonun normal güvenlik kısıtlamaları azaltıldığı için uygulamaların dosyalarına veya belleğine ulaşmak daha kolay olabilir.
+- **Neden Riskli?** İşletim sisteminin sunduğu Sandboxing (uygulamaların birbirinden izole çalışması) ve erişim kısıtlama mimarisi tamamen devre dışı kalır. Tüm süreçler `root` yetkisiyle çalıştırılabildiği için bir uygulamanın güvenlik sınırları aşılmış olur.
+- **Bellek ve Dosya Erişimi Örneği:** Normal şartlarda bir uygulama sadece kendi özel dosya dizinine (`/data/data/com.ornek.app`) erişebilir. Root'lu bir cihazda saldırgan, Frida veya Objection gibi araçlarla çalışan uygulamanın RAM belleğine (memory dump) bağlanarak bellekte şifrelenmeden tutulan Access Token'ları, şifreleri veya SQLite dosyasından düz metin verileri doğrudan okuyabilir.
 
-Örnek: Saldırgan uygulamanın belleğinde bulunan Access Token gibi bilgileri ele geçirebilir veya uygulamanın dosyalarındaki kullanıcı bilgilerine ulaşabilir.
+---
 
-**d- SQLite ve şifreleme**
+**d- SQLite ve Şifreleme**
 
-Normal bir SQLite veritabanında bilgiler düz metin olarak tutuluyorsa, veritabanı dosyasına ulaşan biri bu bilgileri okuyabilir. Bu da kullanıcı bilgilerinin çalınmasına neden olabilir.
+- **Düz Metin Riski:** Standart SQLite veritabanı dosyaları şifresizdir. Cihaz çalındığında, yedeklendiğinde veya Root/Jailbreak erişimi sağlandığında, saldırgan veritabanı dosyasını (`.db`/`.sqlite`) cihazdan çekerek bir SQLite Görüntüleyici ile tüm kullanıcı bilgilerini düz metin olarak okuyabilir.
+- **SQLCipher ile Ne Değişir?** SQLCipher, veritabanı sayfa seviyesinde AES-256 algoritması ile tam disk şifrelemesi sağlar. Doğru şifreleme anahtarı verilmeden veritabanı dosyası dışarıdan açıldığında tamamen anlamsız bayt yığınından ibaret görünür.
 
-SQLCipher kullanıldığında veritabanı şifrelenir. Böylece dosya başkasının eline geçse bile şifreleme anahtarı olmadan içindeki bilgileri okumak daha zor olur.
+---
 
 **e- Access Token ve Refresh Token**
-_Access Token:_ API'lere erişmek için kullanılır ve genellikle kısa süreli tutulur,güvenlik için. Böylece token ele geçirilirse saldırganın kullanabileceği süre sınırlı olur.
 
-_Refresh Token:_ Yeni bir Access Token almak için kullanılır ve daha uzun süre geçerli olabilir. Bu yüzden Access Token'a göre daha güvenli bir yerde saklanması gerekir.
-
-Kullanıcı çıkış yaptığında Refresh Token iptal edilebilir. Böylece eski token kullanılarak tekrar yeni bir Access Token alınmasının önüne geçilebilir.
+- **Temel Fark:**
+  **Access Token**, korumalı kaynaklara (API endpoints) erişim sağlayan kısa ömürlü bir yetki belgesidir. **Refresh Token** ise Access Token'ın süresi dolduğunda kullanıcıyı tekrar giriş ekranına yönlendirmeden yeni bir Access Token almak için kullanılan uzun ömürlü anahtardır.
+- **Access Token Neden Kısa Süreli?** Çalınması veya ağda dinlenmesi (MITM) durumunda saldırganın sisteme erişim süresini ve verebileceği zararı minimumda tutmak için (ör. 15-30 dakika).
+- **Refresh Token Neden Güvenli Yerde Saklanmalı?** Çalındığı takdirde saldırgan uzun süre boyunca sistemden yeni Access Token'lar üreterek kullanıcı adına işlem yapabilir. Bu yüzden Android'de _EncryptedSharedPreferences/Keystore_, iOS'ta _Keychain_ gibi güvenli alanlarda tutulmalıdır.
+- **Çıkış Yapıldığında İptal Edilme Nedeni:** Kullanıcı güvenli çıkış yaptığında, ilgili Refresh Token sunucu tarafında (ör. Redis veya DB) kara listeye alınarak (revoke) yetkisiz kişilerin bu token ile tekrar yeni oturum açması kesin olarak engellenir.
