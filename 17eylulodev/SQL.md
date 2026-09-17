@@ -140,8 +140,7 @@ JOIN departments d
         WHERE e.student_id = s.id
         LIMIT 1
     );
-    ```
-````
+     ```
 
 ### \*\*\*
 
@@ -174,10 +173,14 @@ WHERE Sehir = 'Ankara';
 
 Müşteri bazında yapılan toplam harcamaları görmek için:
 
-`````
+````
+
 SELECT MusteriID, SUM(Tutar) AS ToplamHarcama
 FROM Siparisler
 GROUP BY MusteriID;````
 
 Not: Tabloda NULL (boş) olan değerler varsa, SUM() fonksiyonu bu değerleri otomatik olarak yok sayar ve toplamaya dahil etmez.
-`````
+
+```
+
+```
