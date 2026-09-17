@@ -124,7 +124,7 @@ VALUES
 
 ### Inner Join
 
-````
+```
 SELECT
     s.id,
     s.full_name,
@@ -140,7 +140,7 @@ JOIN departments d
         WHERE e.student_id = s.id
         LIMIT 1
     );
-     ```
+```
 
 ### \*\*\*
 
@@ -148,6 +148,7 @@ SQL'de sütundaki sayısal değerleri toplamak için SUM() toplama (aggregate) f
 
 Temel Kullanım
 `SELECT SUM(sutun_adi) FROM tablo_adi;`
+
 Örnek Senaryolar
 
 ### 1. Belli bir sütunun toplamını alma
@@ -173,14 +174,10 @@ WHERE Sehir = 'Ankara';
 
 Müşteri bazında yapılan toplam harcamaları görmek için:
 
-````
-
+```
 SELECT MusteriID, SUM(Tutar) AS ToplamHarcama
 FROM Siparisler
-GROUP BY MusteriID;````
+GROUP BY MusteriID;
+```
 
 Not: Tabloda NULL (boş) olan değerler varsa, SUM() fonksiyonu bu değerleri otomatik olarak yok sayar ve toplamaya dahil etmez.
-
-```
-
-```
