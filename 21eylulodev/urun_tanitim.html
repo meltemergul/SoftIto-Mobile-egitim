@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirPods 5 - Ürün Tanıtımı</title>
+    <style>
+        :root {
+            --bg-color: #0d0e12;
+            --card-bg: #16181e;
+            --card-border: #262933;
+            --accent-color: #0071e3;
+            --accent-hover: #0077ed;
+            --text-primary: #f5f5f7;
+            --text-secondary: #86868b;
+            --radius-md: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, rgba(22, 24, 30, 0.8) 0%, rgba(13, 14, 18, 0) 100%);
+            border-radius: var(--radius-lg);
+        }
+
+        .hero h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffffff 0%, #a1a1a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p.subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .price-badge {
+            display: inline-block;
+            background-color: rgba(0, 113, 227, 0.15);
+            color: #2997ff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 1px solid rgba(41, 151, 255, 0.3);
+        }
+.product-image-container {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .product-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .product-image-container img:hover {
+            transform: scale(1.02);
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2, .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+        .video-embed-container {
+            position: relative;
+            padding-bottom: 56%; 
+            height: 0;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--card-border);
+        }
+
+        .video-embed-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+
+        .player-container {
+            position: relative;
+            width: 100%;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: #000;
+            border: 1px solid var(--card-border);
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        .custom-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 16px;
+        }
+
+        .timeline-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .progress-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .left-controls, .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .speed-badge {
+            background: var(--accent-color);
+            border-color: transparent;
+        }
+
+        details {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            transition: background 0.2s ease;
+        }
+
+        details[open] {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            color: var(--text-primary);
+        }
+
+        details p {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        meter {
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        meter::-webkit-meter-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+
+        meter::-webkit-meter-optimum-value {
+            background: #34c759;
+        }
+
+        dialog {
+            margin: auto;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+        }
+
+        dialog ul {
+            margin: 16px 0 24px 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        dialog ul li {
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            width: 100%;
+            font-size: 15px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="hero">
+            <h1>AirPods 5</h1>
+            <p class="subtitle">Aktif Gürültü Engelleme özelliğinin sihrini keşfedin.</p>
+            <div class="price-badge">Başlangıç Fiyatı: 9.999 TL</div>
+        </header>
+
+        <div class="product-image-container">
+                <img src="https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?q=80&w=1000&auto=format&fit=crop" alt="AirPods 5 Görseli">
+            </div>
+
+        <div class="video-embed-container">
+            <iframe src="https://www.youtube.com/embed/ZldS1ZXpPHE?si=evhLb-mMw8MuaVS1" 
+                    title="YouTube video player" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+            </iframe>
+        </div>
+
+
+    
+        <section class="card">
+            <h2>Stok Durumu</h2>
+            <label for="stok" class="hint">Mevcut Mağaza Stoğu:</label>
+            <meter id="stok" min="0" max="100"  low="10" high="80" optimum="90" value="80">%80</meter>
+            <p style="font-size: 14px; color: var(--text-secondary);">Sınırlı sayıda stok: %80</p>
+        </section>
+
+
+        <section class="card">
+            <h2>Sıkça Sorulan Sorular</h2>
+            <details>
+                <summary>AirPods hangi cihazlarla kullanılabilir?</summary>
+                <p>AirPods, Bluetooth özelliğine sahip tüm iOS, Android, Windows ve macOS cihazlarıyla tam uyumlu çalışır.</p>
+            </details>
+            <details>
+                <summary>Şarj kutusu ve kulaklıkların pil ömrü ne kadar sürer?</summary>
+                <p>Kulaklıklar tek şarjla yaklaşık 4-6 saat kesintisiz dinleme süresi sunar. Şarj kutusuyla birlikte toplam kullanım süresi 30 saate kadar çıkar. Kutuda 5-10 dakikalık hızlı şarj, yaklaşık 1 saatlik dinleme süresi kazandırır.</p>
+            </details>
+            <details>
+                <summary>AirPods suya ve tereß dayanıklı mı?</summary>
+                <p>AirPods (ve MagSafe Şarj Kutusu), IPX4 / IP54 derecesinde ter ve suya dayanıklılığa sahiptir. Yoğun antrenmanlarda ve hafif yağmurda güvenle kullanılabilir; ancak su sporları (yüzme) veya direkt suyun altına sokulmak için tasarlanmamıştır..</p>
+            </details>
+        </section>
+
+        <section class="card" style="text-align: center;">
+            <h2>Daha Fazla Özellik</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 14px;">Teknik detaylar ve ses teknolojileri hakkında bilgi alın.</p>
+            <button id="bilgiBtn" class="btn-primary" style="border-radius: var(--radius-md);">Detaylı Bilgi Al</button>
+        </section>
+
+
+        <dialog id="bilgiModal">
+            <h2>AirPods 5 Detayları</h2>
+            <p style="color: var(--text-secondary); margin-top: 8px;">Gelişmiş mimari ile benzersiz bir ses deneyimi.</p>
+            <ul>
+                <li>ANC özellikli modellere kıyasla 1.5 kat daha güçlü Aktif Gürültü Engelleme</li>
+                <li>Uyarlanabilir Ses ve Şeffaf Mod geçişleri</li>
+                <li>Dinamik kafa izleme özellikli Kişiselleştirilmiş Uzamsal Ses</li>
+                <li>Siri AI ve Anlık Canlı Çeviri desteği</li>
+                <li>ANC açıkken 4 saate kadar kesintisiz dinleme süresi</li>
+            </ul>
+            <button id="kapatBtn" class="btn-primary">Kapat</button>
+        </dialog>
+
+         <div class="player-container" id="videoBox">
+           <video id="myVideo" playsinline webkit-playsinline preload="metadata">
+            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4" />
+            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm" type="video/webm" />
+            Your browser does not support the video
+        </video>
+            <div class="custom-controls" id="controls">
+                <div class="timeline-container">
+                    <span id="currentTime">0:00</span>
+                    <input type="range" class="progress-bar" id="progressBar" value="0" min="0" max="100" />
+                    <span id="durationTime">0:00</span>
+                </div>
+                <div class="button-group">
+                    <div class="left-controls">
+                        <button id="btnPlay">Oynat</button>
+                        <button id="btnMute">Sessiz</button>
+                    </div>
+                    <div class="right-controls">
+                        <button id="btnSpeed" class="speed-badge">1.0x</button>
+                        <button id="btnPip">PiP</button>
+                        <button id="btnFull">Tam Ekran</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const bilgiBtn = document.getElementById("bilgiBtn");
+        const bilgiModal = document.getElementById("bilgiModal");
+        const kapatBtn = document.getElementById("kapatBtn");
+
+        bilgiBtn.addEventListener("click", () => bilgiModal.showModal());
+        kapatBtn.addEventListener("click", () => bilgiModal.close());
+
+        const video = document.getElementById("myVideo");
+        const btnPlay = document.getElementById("btnPlay");
+        const btnMute = document.getElementById("btnMute");
+        const btnSpeed = document.getElementById("btnSpeed");
+        const btnPip = document.getElementById("btnPip");
+        const btnFull = document.getElementById("btnFull");
+        const progressBar = document.getElementById("progressBar");
+        const currentTimeEL = document.getElementById("currentTime");
+        const durationTimeEL = document.getElementById("durationTime");
+
+        let isPlaying = false;
+        let isMuted = false;
+        let playbackRate = 1.0;
+
+        // 1.Play/Pause Yönetimi
+        btnPlay.addEventListener("click", () => {
+            if (video.paused) {
+                video.play();
+                btnPlay.textContent = "Duraklat";
+            } else {
+                video.pause();
+                btnPlay.textContent = "Oynat";
+            }
+        });
+
+
+        //2.Zaman Formatlama
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        //3.Metadata Toplam Süreyi Alma
+        video.addEventListener("loadedmetadata", () => {
+            durationTimeEL.innerText = formatTime(video.duration);
+        });
+
+        //4.Video Oynarken ilerleme çubuğunu güncelleme
+        video.addEventListener("timeupdate", () => {
+            currentTimeEL.innerText = formatTime(video.currentTime);
+            const progress = (video.currentTime / video.duration) * 100;
+            progressBar.value = isNaN(progress) ? 0 : progress;
+        });
+
+        //5.Kullanıcı çubuğu kaycırdığında videoyu ileri geri sarma
+        progressBar.addEventListener("input", (e) => {
+            const seekTime = (e.target.value / 100) * video.duration;
+            video.currentTime = seekTime;
+        });
+
+        //6.Sessize alma toggle
+        btnMute.addEventListener("click", () => {
+            video.muted = !video.muted;
+            btnMute.textContent = video.muted ? "Sessiz" : "Sesli";
+        });
+
+
+        //7.Oynatma Hızı
+        const speeds = [1.0, 1.25, 1.5, 2.0];
+        let speedIndex = 0;
+        btnSpeed.addEventListener("click", () => {
+            speedIndex = (speedIndex + 1) % speeds.length;
+            video.playbackRate = speeds[speedIndex];
+            btnSpeed.innerText = `${speeds[speedIndex]}x`;
+        });
+
+        //8.PiP resim içinde resim
+        btnPip.addEventListener("click", async () => {
+            try {
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                } else {
+                    await video.requestPictureInPicture();
+                }
+            } catch (error) {
+                console.warn("PiP desteklenmiyor veya izin vermiyor:", error);
+            }
+        });
+
+        //9.Tam Ekran
+        btnFull.addEventListener("click", async () => {
+          const container = document.getElementById("videoBox");
+          if (!document.fullscreenElement) {
+            await container.requestFullscreen().catch((err) => alert(`Tam ekran moduna geçilemedi: ${err.message}`));
+              } else {
+            await document.exitFullscreen();
+          }
+        });
+
+    </script>
+</body>
+
+</html>
