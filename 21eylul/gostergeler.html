@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yerel HTML5 Göstergeleri</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+            margin: auto;
+            box-shadow: 0;
+            padding: 24px;
+            max-width: 480px;
+            background: #f8fafc;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+        }
+
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 13px;
+
+        }
+
+        progress,
+        meter {
+            width: 100%;
+            height: 24px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .hint {
+            font-size: 12px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+<div class="card">
+    <h3>HTML5  Yerel Göstergeleri(sıfır js)</h3>
+    <!--İlerleme Göstergesi-->
+    <label for="p1">PROFİL DOLULUK ORANI</label>
+    <progress id="p1" value="75" max="100">75%</progress>
+    <div class="hint">Bu, bir işlemin %75 tamamlandığını gösterir.</div>
+    <hr style="margin: 16px 0; border-top: 1px solid #e2e8f0;">
+
+
+    <!--Batarya Göstergesi-->
+    <label for="m1">Mobil Batarya Seviyesi (15%-kritik düşük):</label>
+    <meter id="m1" value="10" min="0" max="100" low="20" high="80" optimum="90"></meter>
+    <div class="hint">Kritik seviyede olduğu için <strong>kırmızı</strong> renkle uyarır.</div>
+    <hr style="margin: 16px 0; border-top: 1px solid #e2e8f0;">     
+
+
+    <br>
+
+   <label for="m2">Mobil Batarya Seviyesi (85%-ideal):</label>
+    <meter id="m2" value="85" min="0" max="100" low="20" high="80" optimum="90"></meter>
+    <div class="hint">İdeal seviyede olduğu için tarayıcı bunu otomatik olarak <strong>yeşil</strong> renkle gösterir.</div>
+
+
+</div>
+</body>
+
+</html>
