@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexBox Container Laboratuarı</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Open Sans', sans-serif;
+            background-color: #f0f0f0;
+            padding: 24px;
+        }
+
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .chip {
+            background-color: #a2a0c2;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #334115;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #e0e7ff;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+        }
+
+        .card-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .btn-edit {
+            background-color: #4f46e5;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Mobil filtre (flex-wrap + gap)</h2>
+    <div class="chip-container">
+        <div class="chip">Akıllı Telefon</div>
+        <div class="chip">Bilgisayar</div>
+        <div class="chip">Kulaklık</div>
+        <div class="chip">Akıllı Saat</div>
+        <div class="chip">Oyun Konsolu</div>
+        <div class="chip">Aksesuar</div>
+    </div>
+
+    <h2>Navigasyon barı (space-between + align-items)</h2>
+    <div class="card-header">
+        <div>
+            <h3>Kullanıcı Profili</h3>
+            <p>Detaylı bilgiler</p>
+        </div>
+        <button class="btn-edit">Düzenle</button>
+    </div>
+</body>
+
+</html>
