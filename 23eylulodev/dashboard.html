@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ERP Yönetim Paneli</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="erp-layout">
+
+        <!-- Sol Menü -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-icon">MT</div>
+
+                <div>
+                    <strong>ERP PANEL</strong>
+                    <span>Yönetim Sistemi</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+
+                <a href="#" class="menu-item active">
+                    <span>📈</span>
+                    Dashboard
+                </a>
+
+                <a href="#" class="menu-item">
+                    <span>🛒</span>
+                    Siparişler
+                </a>
+
+                <a href="#" class="menu-item">
+                    <span>📦</span>
+                    Ürünler
+                </a>
+
+                <a href="#" class="menu-item">
+                    <span>👥</span>
+                    Müşteriler
+                </a>
+
+                <a href="#" class="menu-item">
+                    <span>💰</span>
+                    Finans
+                </a>
+
+                <a href="#" class="menu-item">
+                    <span>⚙️</span>
+                    Ayarlar
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="online-dot"></span>
+                Sistem çevrimiçi
+            </div>
+
+        </aside>
+
+
+        <!-- Ana Alan -->
+        <div class="content-area">
+
+            <!-- Üst Bar -->
+            <header class="top-bar">
+
+                <div>
+                    <span class="breadcrumb">Ana Sayfa / Dashboard</span>
+                    <h1>Yönetim Paneli</h1>
+                </div>
+
+                <div class="user-area">
+                    <button class="notification-button">
+                        🔔
+                        <span class="notification-badge"></span>
+                    </button>
+
+                    <div class="user-info">
+                        <strong>Meltem Taşkıran</strong>
+                        <span>Admin</span>
+                    </div>
+
+                    <div class="user-avatar">
+                        MT
+                    </div>
+                </div>
+
+            </header>
+
+
+            <main class="main-content">
+
+                <!-- Sayfa Başlığı -->
+                <section class="page-heading">
+
+                    <div>
+                        <span class="section-label">Genel Bakış</span>
+                        <h2>Hoş geldin, Meltem</h2>
+                        <p>İşletmene ait güncel verileri buradan takip edebilirsin.</p>
+                    </div>
+
+                    <button class="primary-button">
+                        ✚ Yeni İşlem
+                    </button>
+
+                </section>
+
+
+                <!-- KPI Kartları -->
+                <section class="kpi-grid">
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-top">
+                            <span>Toplam Gelir</span>
+                            <div class="kpi-icon green">💵</div>
+                        </div>
+
+                        <strong>₺248.500</strong>
+
+                        <div class="kpi-bottom">
+                            <span class="positive">▲ %12,8</span>
+                            <small>Geçen aya göre</small>
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-top">
+                            <span>Toplam Sipariş</span>
+                            <div class="kpi-icon purple">🛒</div>
+                        </div>
+
+                        <strong>1.284</strong>
+
+                        <div class="kpi-bottom">
+                            <span class="positive">▲ %8,4</span>
+                            <small>Geçen aya göre</small>
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-top">
+                            <span>Aktif Müşteri</span>
+                            <div class="kpi-icon orange">👤</div>
+                        </div>
+
+                        <strong>3.842</strong>
+
+                        <div class="kpi-bottom">
+                            <span class="positive">▲ %5,2</span>
+                            <small>Geçen aya göre</small>
+                        </div>
+
+                    </article>
+
+
+                    <article class="kpi-card">
+
+                        <div class="kpi-top">
+                            <span>Bekleyen İşlem</span>
+                            <div class="kpi-icon red">🕓</div>
+                        </div>
+
+                        <strong>26</strong>
+
+                        <div class="kpi-bottom">
+                            <span class="negative">▼ %2,1</span>
+                            <small>Geçen aya göre</small>
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <!-- Grafik ve Hızlı İşlemler -->
+                <section class="dashboard-grid">
+
+                    <article class="panel revenue-panel">
+
+                        <div class="panel-header">
+                            <div>
+                                <span class="section-label">Finansal Rapor</span>
+                                <h3>Gelir Analizi</h3>
+                            </div>
+
+                            <select>
+                                <option>Son 6 Ay</option>
+                                <option>Son 12 Ay</option>
+                            </select>
+                        </div>
+
+                        <div class="chart">
+
+                            <div class="chart-row">
+                                <span>Ocak</span>
+                                <div class="chart-track">
+                                    <div class="chart-bar" style="width: 45%;"></div>
+                                </div>
+                                <strong>₺45K</strong>
+                            </div>
+
+                            <div class="chart-row">
+                                <span>Şubat</span>
+                                <div class="chart-track">
+                                    <div class="chart-bar" style="width: 65%;"></div>
+                                </div>
+                                <strong>₺65K</strong>
+                            </div>
+
+                            <div class="chart-row">
+                                <span>Mart</span>
+                                <div class="chart-track">
+                                    <div class="chart-bar" style="width: 52%;"></div>
+                                </div>
+                                <strong>₺52K</strong>
+                            </div>
+
+                            <div class="chart-row">
+                                <span>Nisan</span>
+                                <div class="chart-track">
+                                    <div class="chart-bar" style="width: 80%;"></div>
+                                </div>
+                                <strong>₺80K</strong>
+                            </div>
+
+                            <div class="chart-row">
+                                <span>Mayıs</span>
+                                <div class="chart-track">
+                                    <div class="chart-bar" style="width: 70%;"></div>
+                                </div>
+                                <strong>₺70K</strong>
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="panel quick-panel">
+
+                        <div class="panel-header">
+                            <div>
+                                <span class="section-label">Kısayollar</span>
+                                <h3>Hızlı İşlemler</h3>
+                            </div>
+                        </div>
+
+                        <div class="quick-actions">
+
+                            <button class="quick-action">
+                                <span>✚</span>
+                                Yeni Ürün
+                            </button>
+
+                            <button class="quick-action">
+                                <span>🛒</span>
+                                Sipariş Oluştur
+                            </button>
+
+                            <button class="quick-action">
+                                <span>👤</span>
+                                Müşteri Ekle
+                            </button>
+
+                            <button class="quick-action">
+                                <span>📊</span>
+                                Rapor Görüntüle
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+
+                <!-- Siparişler ve Stok -->
+                <section class="bottom-grid">
+
+                    <!-- Son Siparişler -->
+                    <article class="panel orders-panel">
+
+                        <div class="panel-header">
+                            <div>
+                                <span class="section-label">Son Hareketler</span>
+                                <h3>Son Siparişler</h3>
+                            </div>
+
+
+                        </div>
+
+                        <!-- Skeleton Loading -->
+                        <div class="skeleton-list">
+
+                            <div class="skeleton-order">
+                                <div class="skeleton skeleton-order-id"></div>
+                                <div class="skeleton skeleton-customer"></div>
+                                <div class="skeleton skeleton-price"></div>
+                                <div class="skeleton skeleton-status"></div>
+                            </div>
+
+                            <div class="skeleton-order">
+                                <div class="skeleton skeleton-order-id"></div>
+                                <div class="skeleton skeleton-customer"></div>
+                                <div class="skeleton skeleton-price"></div>
+                                <div class="skeleton skeleton-status"></div>
+                            </div>
+
+                            <div class="skeleton-order">
+                                <div class="skeleton skeleton-order-id"></div>
+                                <div class="skeleton skeleton-customer"></div>
+                                <div class="skeleton skeleton-price"></div>
+                                <div class="skeleton skeleton-status"></div>
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- Stok Durumu -->
+                    <article class="panel stock-panel">
+
+                        <div class="panel-header">
+                            <div>
+                                <span class="section-label">Envanter</span>
+                                <h3>Stok Durumu</h3>
+                            </div>
+                        </div>
+
+                        <div class="stock-item">
+
+                            <div class="stock-heading">
+                                <span>Elektronik</span>
+                                <strong>80%</strong>
+                            </div>
+
+                            <div class="progress-track">
+                                <div class="progress green-progress"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="stock-item">
+
+                            <div class="stock-heading">
+                                <span>Giyim</span>
+                                <strong>60%</strong>
+                            </div>
+
+                            <div class="progress-track">
+                                <div class="progress purple-progress"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="stock-item">
+
+                            <div class="stock-heading">
+                                <span>Aksesuar</span>
+                                <strong>35%</strong>
+                            </div>
+
+                            <div class="progress-track">
+                                <div class="progress orange-progress"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="stock-warning">
+                            ⚠ 4 ürünün stok seviyesi kritik.
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+            </main>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
