@@ -89,105 +89,114 @@
 
 
         /* 3.Şarj Süresi ,Fiyat,Gece-Gündüz Tarifesi*/
-        const TarifeliSarjHesapla = (
+        // Araç Tipleri ve Teknik Özellikleri
+        const ARAC_TIPLERI = {
+            BEV_800V: {
+                ad: "Tam Elektrikli (800V Yüksek Performans)",
+                maksAcKw: 22,
+                maksDcKw: 270,
+                verimlilik: 0.94, // Daha az ısı kaybı
+                dcDestegi: true
+            },
+            BEV_400V: {
+                ad: "Tam Elektrikli (Standard 400V)",
+                maksAcKw: 11,
+                maksDcKw: 120,
+                verimlilik: 0.88,
+                dcDestegi: true
+            },
+            PHEV: {
+                ad: "Plug-in Hibrit",
+                maksAcKw: 3.7,
+                maksDcKw: 0, // Genelde DC desteklemez
+                verimlilik: 0.85,
+                dcDestegi: false
+            },
+            MINI_L7E: {
+                ad: "Mikro Şehir Aracı (Citroën Ami vb.)",
+                maksAcKw: 2.3,
+                maksDcKw: 0,
+                verimlilik: 0.85,
+                dcDestegi: false
+            }
+        };
+
+        const sarjHesaplaAracli = (
             mevcutYuzde,
             hedefYuzde,
             bataryaKapasitesiKwh,
             istasyonKw,
-            aracMaksKw,
-            baslangicSaati = 20,  // Şarjın başladığı saat (0-23 arası tam sayı)
-            gunduzKwhFiyati = 9.5, // 06:00 - 22:00 arası (TL/kWh)
-            geceKwhFiyati = 6.0,   // 22:00 - 06:00 arası (TL/kWh)
-            sabitUcret = 20,       // Soket açılış ücreti (TL)
-            verimlilik = 0.90      // %90 verimlilik
+            istasyonTipi = "DC", // "AC" veya "DC"
+            aracTipi = ARAC_TIPLERI.BEV_400V,
+            baslangicSaati = 20,
+            gunduzKwhFiyati = 9.5,
+            geceKwhFiyati = 6.0,
+            sabitUcret = 20
         ) => {
-            if (mevcutYuzde >= hedefYuzde || mevcutYuzde < 0 || hedefYuzde > 100) {
-                return { sureDakika: 0, cekilenKwh: 0, toplamTutar: 0, detay: { gunduzKwh: 0, geceKwh: 0 } };
+            if (mevcutYuzde >= hedefYuzde) return { sureDakika: 0, toplamTutar: 0 };
+
+            // 1. Aracın alabileceği maksimum şarj gücünü tespit et
+            let aracMaksGuc = 0;
+            if (istasyonTipi === "DC") {
+                // Araç DC desteklemiyorsa otomatik olarak AC sınırına düşür
+                aracMaksGuc = aracTipi.dcDestegi ? aracTipi.maksDcKw : aracTipi.maksAcKw;
+            } else {
+                aracMaksGuc = aracTipi.maksAcKw;
             }
 
+            // 2. Gerçek gerçekleşen şarj hızı
+            const gercekGuc = Math.min(istasyonKw, aracMaksGuc);
+            if (gercekGuc <= 0) return { sureDakika: 0, toplamTutar: 0 };
+
+            // 3. Enerji ve Verimlilik Hesabı
             const sarjYuzdesi = hedefYuzde - mevcutYuzde;
             const netEnerji = bataryaKapasitesiKwh * (sarjYuzdesi / 100);
-            const brutEnerji = netEnerji / verimlilik;
+            const brutEnerji = netEnerji / aracTipi.verimlilik;
 
-            const gercekSarjGucu = Math.min(istasyonKw, aracMaksKw);
-            if (gercekSarjGucu <= 0) return { sureDakika: 0, cekilenKwh: 0, toplamTutar: 0, detay: { gunduzKwh: 0, geceKwh: 0 } };
+            // 4. Süre Hesabı (Dakika)
+            const sureDakika = Math.round((brutEnerji / gercekGuc) * 60);
 
-            // Toplam şarj süresi (Saat cinsinden)
-            const toplamSureSaat = brutEnerji / gercekSarjGucu;
-            const sureDakika = Math.round(toplamSureSaat * 60);
-
-            // Gece / Gündüz saat dağılımını hesaplama (Saat saat hesaplanır)
+            // 5. Gece/Gündüz Maliyet Hesabı
+            const toplamSureSaat = brutEnerji / gercekGuc;
             let gunduzSaatleri = 0;
             let geceSaatleri = 0;
             let kalanSure = toplamSureSaat;
             let mevcutSaat = baslangicSaati % 24;
 
             while (kalanSure > 0) {
-                const harcananSüre = Math.min(kalanSure, 1); // En fazla 1 saatlik dilim al
-
-                // 06:00 - 22:00 arası Gündüz tarifesidir
+                const dilim = Math.min(kalanSure, 1);
                 if (mevcutSaat >= 6 && mevcutSaat < 22) {
-                    gunduzSaatleri += harcananSüre;
+                    gunduzSaatleri += dilim;
                 } else {
-                    geceSaatleri += harcananSüre;
+                    geceSaatleri += dilim;
                 }
-
-                kalanSure -= harcananSüre;
+                kalanSure -= dilim;
                 mevcutSaat = (mevcutSaat + 1) % 24;
             }
 
-            // Çekilen toplam enerjiyi geçen sürelere oranla gündüz/geceye dağıt
             const gunduzKwh = (gunduzSaatleri / toplamSureSaat) * brutEnerji;
             const geceKwh = (geceSaatleri / toplamSureSaat) * brutEnerji;
-
-            // Tutar hesabı
-            const gunduzTutar = gunduzKwh * gunduzKwhFiyati;
-            const geceTutar = geceKwh * geceKwhFiyati;
-            const toplamTutar = gunduzTutar + geceTutar + sabitUcret;
+            const toplamTutar = (gunduzKwh * gunduzKwhFiyati) + (geceKwh * geceKwhFiyati) + sabitUcret;
 
             return {
+                aracModeli: aracTipi.ad,
+                kullanilanGucKw: gercekGuc,
                 sureDakika: sureDakika,
                 cekilenKwh: Number(brutEnerji.toFixed(2)),
-                toplamTutar: Number(toplamTutar.toFixed(2)),
-                detay: {
-                    gunduzKwh: Number(gunduzKwh.toFixed(2)),
-                    geceKwh: Number(geceKwh.toFixed(2)),
-                    gunduzTutar: Number(gunduzTutar.toFixed(2)),
-                    geceTutar: Number(geceTutar.toFixed(2))
-                }
+                toplamTutar: Number(toplamTutar.toFixed(2))
             };
         };
 
-        // Örnek: Saat 21:00'de başlayan ve geceye sarkan şarj işlemi (Yaklaşık 2 saat / 120 dk sürsün)
-        // %10'dan %90'a, 100 kWh batarya, 40 kW şarj hızı
-        const sonuc3 = TarifeliSarjHesapla(
-            10,   // Mevcut %
-            90,   // Hedef %
-            100,  // Batarya kWh
-            40,   // İstasyon kW
-            50,   // Araç Maks kW
-            21,   // Başlangıç saati (21:00)
-            9.5,  // Gündüz kWh Fiyatı
-            6.0,  // Gece kWh Fiyatı
-            20    // Sabit Ücret
-        );
+        // --- TEST / ÖRNEK KULLANIMLAR ---
 
-        console.log(sonuc3);
+        // Senaryo A: Plug-in Hibrit aracı 150 kW DC hızlı şarj istasyonuna taksak bile
+        // Araç DC desteklemediği için 3.7 kW hızla şarj olur.
+        console.log(sarjHesaplaAracli(10, 100, 13.8, 150, "DC", ARAC_TIPLERI.PHEV));
+        // Süre ~221 dk (3.5 saat) çıkar.
 
-        /*
-        Çıktı Örneği:
-        {
-          sureDakika: 133,
-          cekilenKwh: 88.89,
-          toplamTutar: 712.96,
-          detay: {
-            gunduzKwh: 39.88,  (21:00 - 22:00 arası gündüzden yazdı)
-            geceKwh: 49.01,    (22:00'den sonrası geceden yazdı)
-            gunduzTutar: 378.86,
-            geceTutar: 294.09
-          }
-        }
-        */
+        // Senaryo B: 800V Taycan / Ioniq 5 gibi bir aracı 300 kW DC istasyona takarsak
+        console.log(sarjHesaplaAracli(10, 80, 77, 300, "DC", ARAC_TIPLERI.BEV_800V));
+        // Yüksek verimlilik ve 270 kW çekebildiği için Süre ~13 dk çıkar.  */
     </script>
 </body>
 
