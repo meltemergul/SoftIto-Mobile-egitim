@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS İlk Ders</title>
+</head>
+
+<body>
+
+
+    <script>
+        /*
+        //1.Var Felaketi süslü parantez dinlemez dışarıya sızar
+        if (true) {
+            var tehlikeliSayi = 999;
+        }
+        console.log("var sızdı mı?", tehlikeliSayi)
+
+        //2.Let ve Const Kalkanı:süsşü parantez bir oda çıkış yasak çıkamaz
+        if (true) {
+            let güvenliSayi = 42;
+            const PI = 3.1415;
+            console.log("oda içi", güvenliSayi, PI);
+        }
+        //console.warn(güvenliSayi)
+
+        //3.Const Değiştirilmezlik Kuralı
+        const APİ_URL = "https://kodusta.com/v1";
+        console.log(APİ_URL);
+        //let API_URL="tekrar eden link";
+
+        //Dikkat edin buraya
+        const arac = { marka: "Togg", model: "T10X" };
+        console.log(arac);
+        arac.renk = "beyaz";
+        console.log(arac);
+
+        ///bu yasak kullanamazsın
+        arac = { baska: "obje" };
+        console.log(arac);
+
+
+        //Veri Tipleri & TİP Dönüşümü
+
+        const isim = "meltem";  //string
+        const bataryaKapasite = 88.5; //number(float/int ayrım almıyor)
+        const sarjTamamlandi = false;
+        let sonrakiRandevu; //undefined (kutu var içi boş)
+        const servisNotu = null; //NULL bilinçli olarak boş
+        const büyükSayi = 648479229n; //bigInt
+        const gizliAnahtar = Symbol("id"); //Symbol
+
+        console.log(typeof isim);
+        console.log(typeof bataryaKapasite);
+        console.log(typeof sarjTamamlandi);
+        console.log(typeof sonrakiRandevu);
+        console.log(typeof servisNotu);  //neden hata oldu,95 yılından kalan eski
+
+
+        //otomatik tip çevrimi
+        console.log("5" + 2);  // + işareti metin birleştirme
+        console.log("5" - 2);  //- işareti stringi zorlayarak sayıya çevirir
+
+        console.log("5" * "4"); //20
+        console.log("beş" * 2); //numara değil hatası
+
+
+        console.log(typeof NaN)
+        console.log(NaN === NaN)
+
+        console.log(Number.isNaN(NaN))
+        
+        //Manuel Tip Dönüştürme(profosyonel yolu)
+        const stringFiyat = "1473.33";
+        const SayiFiyat = Number(stringFiyat);
+        const pixelDegeri = parseInt("48px", 10);
+        const metinSayi = String(2026);
+
+        console.log(stringFiyat);
+        console.log(SayiFiyat);
+        console.log(pixelDegeri);
+        console.log(metinSayi);
+
+        //Katı Eşitlik
+        //Neden her zaman === kullanmalıyız
+
+        console.log(5 == "5")//true. gevşet eşitlik
+        console.log(5 === "5") //false. Hem Değer Hem Tür Kontrolü
+        console.log(0 == false) //true . gevşet eşitlik felaket
+        console.log(0 === false) //false . 
+        console.log(null == undefined) //true
+        console.log(null === undefined) //false
+
+        //template literals
+        const kullanici = "esra ergün"
+        const bakiye = 1000;
+        const harcama = 10000;
+
+        const eskiMesaj = "sayın" + kullanici + "kalan bakiyeniz:" + (bakiye - harcama) + "tldir"
+        console.log(eskiMesaj);
+
+        //modern e6 standartları-backtik
+
+        const modernMesaj = `Sayın ${kullanici},
+Bugünkü harcamanız: ${harcama}₺,
+Kalan bakiyeniz: ${bakiye - harcama}₺,
+Durum: ${bakiye - harcama > 1000 ? "Güvenli bakiye" : "Kritik bakiye"}`;
+
+        console.log(modernMesaj);
+
+        const bataryaSeviyesi = 30;
+        const istasyonUygunMu = true;
+        const bakiyeTL = 100;
+        const minimumGirisTutari = 500;
+
+        if (!istasyonUygunMu) {
+            console.log('istasyon şuanda serviş dışı veya meşgul')
+
+        }
+        else if (bakiyeTL < minimumGirisTutari) {
+            console.log(`$bakiye yetersiz! en az ${minimumGirisTutari} gereklidir.Mevcut:${bakiyeTL}₺`);
+
+        }
+        else if (bataryaSeviyesi <= 20) {
+            console.log("kritik seviye ultra hızlı dc şarj moduna geçiliyor");
+        }
+        else {
+            console.log("standart şarj başlatılabilir");
+        }
+
+
+
+        //Jsde 6 değer false olarak kabul edilir.
+        //false,0,"",null,undefined,NaN
+        //bunun dışındaki her şey[] boş dizi olarak true olarak kabul edilir.
+
+        const kullaniciGirdisi = "";
+        if (kullaniciGirdisi) {
+            console.log("girdi dolu")
+        }
+        else {
+            console.log("girdi boş")
+        }
+
+        //koşul?dogruysa_deger:yanlisaa_deger
+
+        const soketDurumu = "mesgul";
+        const durumMesaji = soketDurumu === "uygun" ? "soket boşta" : "soket kullanımda";
+        console.log(durumMesaji)
+
+
+        //arrow function
+
+        //klasik fonksiyon
+        function toplaKlasik(sayi1, sayi2) {
+            return sayi1 + sayi2;
+        }
+
+        //modern fonksiyon e6 standartlarıyla
+        const toplaModern = (sayi1, sayi2) => { return sayi1 + sayi2 }
+
+
+        //tek satırlık function arrow
+        const toplaKisa = (sayi1, sayi2) => sayi1 + sayi2;
+
+        //tek parametreli
+        const karesiniAl = sayi => sayi * sayi;
+
+        const profilUret = (ad, rol) =>
+            ({ ad: ad, rol: rol, kayitTarihi: 2026 })
+
+        console.log("toplama sonucu", toplaKlasik(15, 27))
+        console.log("toplama sonucu", toplaModern(15, 27))
+        console.log("toplama sonucu", toplaKisa(15, 27))
+        console.log(karesiniAl(8))
+
+        console.log("Profil", profilUret("Tuba", "Öğrenci"))
+        //Meydan Okuma indirimli sepet tutarı hesaplayıcı
+        const indirimHesapla = (tutar, indirimTutari) =>
+            tutar - tutar * (indirimTutari / 100);
+
+        const tutar = Number(prompt("Tutarı giriniz:"));
+        const indirimTutari = Number(prompt("İndirim oranını giriniz:"));
+
+        console.log(`İndirimli tutar: ${indirimHesapla(tutar, indirimTutari)}₺`);
+*/
+        //şarj süresi tahmin edecek dakika cinsinden ,verilecek degerler:mevcutYüzde,hedefYuzde,bataryaKw,istasyonKw
+
+        const sarjSuresi = (
+            mevcutYuzde,
+            hedefYuzde,
+            bataryaKw,
+            istasyonKw
+        ) => {
+            if (mevcutYuzde === hedefYuzde) {
+                return 0;
+            }
+
+            const sarjYuzdesi = hedefYuzde - mevcutYuzde;
+            const gerekliEnerji = bataryaKw * (sarjYuzdesi / 100);
+            const gercekSarjGucu = Math.min(istasyonKw, bataryaKw);
+
+            return (gerekliEnerji / gercekSarjGucu) * 60;
+        };
+        console.log(sarjSuresi(20, 80, 10, 20));
+        //ilk hali
+        //fiyat
+        //gece-gündüz fiyat
+        //kartın ortası fotoğraf
+
+    </script>
+</body>
+
+</html>
