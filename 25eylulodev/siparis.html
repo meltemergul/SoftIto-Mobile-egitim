@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sipariş & Gelir Kokpit Dashboard</title>
+    <style>
+        /*
+   * = sayfadaki bütün HTML elementlerini seçer.
+   ::before ve ::after = elementlerin oluşturabileceği
+   pseudo-elementleri de kapsar.
+*/
+        *,
+        *::before,
+        *::after {
+            /*
+       Elementlerin varsayılan iç boşluğunu kaldırır.
+    */
+            padding: 0;
+
+            /*
+       Elementlerin varsayılan dış boşluğunu kaldırır.
+    */
+            margin: 0;
+
+            /*
+       width ve height hesaplamasına
+       padding ve border'ın da dahil edilmesini sağlar.
+       Örneğin:
+       width: 100px;
+       padding: 10px;
+
+       content-box → toplam genişlik 120px olabilir.
+       border-box  → toplam genişlik 100px kalır.
+    */
+            box-sizing: border-box;
+        }
+
+        /*
+   :root = sayfanın en üst seviyesindeki elementtir.
+   Burada CSS değişkenleri tanımlıyoruz.
+   Avantajı:
+   Rengi tek yerden değiştiririz.
+*/
+        :root {
+            /* Sayfanın ana arka plan rengi */
+            --bg: #f8f7f4;
+
+            /* Kart ve panel arka planı */
+            --card: #ffffff;
+
+            /* Kenarlık rengi */
+            --border: #e6e5df;
+
+            /* Ana yazı rengi */
+            --text: #181716;
+
+            /* İkincil / daha soluk yazı rengi */
+            --muted: #6b6963;
+
+            /* Ana vurgu rengi */
+            --clay: #c85a32;
+
+            /* Buton hover rengi */
+            --clay-hover: #b04e29;
+
+            /* Ana yazı tipi */
+            --font-main: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+            /* Sayısal / teknik alanlarda kullanılan yazı tipi */
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+
+        body {
+
+            /*
+       Sayfanın arka planını belirler.
+       Burada yukarıdaki CSS değişkenini kullanıyoruz.
+    */
+            background: var(--bg);
+
+            /* Ana yazı rengi */
+            color: var(--text);
+
+            /* Sayfanın varsayılan fontu */
+            font-family: var(--font-main);
+
+            /*
+       İçerikle ekran kenarı arasında boşluk oluşturur.
+
+       36px → üst-alt
+       16px → sağ-sol
+    */
+            padding: 36px 16px;
+
+            /*
+       Satırlar arasındaki yüksekliği belirler.
+       1.5 = font boyutunun 1.5 katı.
+    */
+            line-height: 1.5;
+        }
+
+        .kokpit {
+
+            /*
+       İçeriğin maksimum genişliğini 960px yapar.
+       Ekran daha büyük olsa bile içerik 960px'i geçmez.
+    */
+            max-width: 960px;
+
+            /*
+       margin: 0 auto;
+
+       Üst-alt → 0
+       Sağ-sol → auto
+
+       Böylece container yatayda ortalanır.
+    */
+            margin: 0 auto;
+        }
+
+
+        .header {
+
+            /* Header ile altındaki KPI alanı arasında boşluk */
+            margin-bottom: 24px;
+
+            /* Header'ın iç alt boşluğu */
+            padding-bottom: 16px;
+
+            /*
+       Header'ın altında ince bir çizgi oluşturur.
+
+       1px → çizgi kalınlığı
+       solid → düz çizgi
+       var(--border) → çizgi rengi
+    */
+            border-bottom: 1px solid var(--border);
+        }
+
+
+        /* Header üzerindeki küçük "Sipariş Takip" yazısı */
+        .header__tag {
+
+            /* Yazı boyutu */
+            font-size: 11px;
+
+            /*
+       Harfleri büyük gösterir.
+
+       örnek:
+       Sipariş Takip
+       ↓
+       SİPARİŞ TAKİP
+    */
+            text-transform: uppercase;
+
+            /*
+       Harfler arasındaki boşluk.
+       Küçük etiketlerde okunabilirliği artırır.
+    */
+            letter-spacing: 0.12em;
+
+            /* Ana vurgu rengini kullanır */
+            color: var(--clay);
+
+            /* Yazıyı kalınlaştırır */
+            font-weight: 700;
+        }
+
+
+        /* Ana başlık */
+        .header__title {
+
+            font-size: 26px;
+
+            font-weight: 700;
+
+            /*
+       Başlığın üst tarafında küçük boşluk.
+    */
+            margin-top: 2px;
+        }
+
+
+
+
+        .kpi-grid {
+
+            /*
+       Grid layout kullanıyoruz.
+
+       repeat(3, 1fr)
+       → 3 tane eşit genişlikte kolon oluşturur.
+    */
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+
+            /* Kartlar arasındaki boşluk */
+            gap: 14px;
+
+            /* Grid'in altındaki boşluk */
+            margin-bottom: 24px;
+        }
+
+
+        /* KPI kartları */
+        .kpi-card {
+
+            /* Kartın arka planı */
+            background: var(--card);
+
+            /* İnce kenarlık */
+            border: 1px solid var(--border);
+
+            /*
+       Köşeleri yuvarlatır.
+    */
+            border-radius: 8px;
+
+            /*
+       İçerik ile kart kenarı arasındaki boşluk.
+
+       14px → üst-alt
+       18px → sağ-sol
+    */
+            padding: 14px 18px;
+        }
+
+
+        /* KPI başlıkları */
+        .kpi-card span {
+
+            font-size: 12px;
+
+            color: var(--muted);
+
+            font-weight: 600;
+        }
+
+
+        /* KPI değerleri */
+        .kpi-card h3 {
+
+            font-size: 22px;
+
+            font-weight: 700;
+
+            /*
+       Monospace font.
+       Özellikle fiyat ve sayıların hizalı görünmesini sağlar.
+    */
+            font-family: var(--font-mono);
+
+            margin-top: 4px;
+        }
+
+
+        .layout {
+
+            /*
+       Sol tarafta form,
+       sağ tarafta ürün listesi olacak.
+    */
+            display: grid;
+
+            /*
+       İlk kolon 320px,
+       ikinci kolon kalan alanı kaplar.
+    */
+            grid-template-columns: 320px 1fr;
+
+            /* İki kolon arasındaki boşluk */
+            gap: 24px;
+        }
+
+
+
+        /*
+   Ekran genişliği 768px veya daha küçük olduğunda
+   aşağıdaki CSS uygulanır.
+
+   Yani tablet / mobil görünüm.
+*/
+        @media (max-width: 768px) {
+
+            .layout,
+            .kpi-grid {
+
+                /*
+           İki kolon yerine tek kolon olur.
+        */
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+
+            /* Panelin arka planı */
+            background: var(--card);
+
+            /* Panel kenarlığı */
+            border: 1px solid var(--border);
+
+            /* Köşeleri yuvarlatır */
+            border-radius: 10px;
+
+            /* Panel iç boşluğu */
+            padding: 20px;
+        }
+
+
+        /* Panel başlığı */
+        .panel h4 {
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            /* Başlığın altındaki boşluk */
+            margin-bottom: 14px;
+
+            /* Başlığın altındaki iç boşluk */
+            padding-bottom: 8px;
+
+            /* Başlığın altında çizgi */
+            border-bottom: 1px solid var(--border);
+        }
+
+        .field {
+
+            /*
+       Her form alanının altında boşluk bırakır.
+    */
+            margin-bottom: 12px;
+        }
+
+
+        /* Form label */
+        .field label {
+
+            /*
+       Label normalde inline elementtir.
+       block yaparak kendi satırına geçmesini sağlıyoruz.
+    */
+            display: block;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            margin-bottom: 4px;
+        }
+
+
+        /*
+   Aynı CSS'i hem input hem select için uyguluyoruz.
+*/
+        .field input,
+        .field select {
+
+            /*
+       Bulunduğu alanın tamamını kaplar.
+    */
+            width: 100%;
+
+            /* İç boşluk */
+            padding: 8px 10px;
+
+            /* Yazı boyutu */
+            font-size: 13px;
+
+            /* Form elementinin fontunu sayfadaki fontla aynı yapar */
+            font-family: inherit;
+
+            /* Arka plan */
+            background: var(--bg);
+
+            /* Kenarlık */
+            border: 1px solid var(--border);
+
+            /* Köşeleri yuvarlatır */
+            border-radius: 6px;
+        }
+
+
+        /*
+   :focus =
+   Kullanıcı input veya select'e tıkladığında
+   uygulanan stil.
+*/
+        .field input:focus,
+        .field select:focus {
+
+            /*
+       Browser'ın varsayılan mavi focus çizgisini kaldırır.
+    */
+            outline: none;
+
+            /* Focus olduğunda vurgu rengi */
+            border-color: var(--clay);
+
+            /* Arka planı beyaz yapar */
+            background: #fff;
+        }
+
+        .btn-submit {
+
+            /* Buton panelin tamamını kaplar */
+            width: 100%;
+
+            /* Buton rengi */
+            background: var(--clay);
+
+            /* Yazı rengi */
+            color: #fff;
+
+            /* Varsayılan button borderını kaldırır */
+            border: none;
+
+            /* İç boşluk */
+            padding: 10px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            border-radius: 6px;
+
+            /*
+       Mouse butonun üzerine geldiğinde
+       imleç el şeklinde olur.
+    */
+            cursor: pointer;
+
+            margin-top: 6px;
+        }
+
+
+        /*
+   :hover =
+   Mouse butonun üzerine geldiğinde çalışır.
+*/
+        .btn-submit:hover {
+
+            /* Buton biraz daha koyu olur */
+            background: var(--clay-hover);
+        }
+
+        .filter-bar {
+
+            /*
+       Arama inputu ve kategori selectini
+       yan yana yerleştirir.
+    */
+            display: flex;
+
+            /* Aralarındaki boşluk */
+            gap: 10px;
+
+            margin-bottom: 14px;
+        }
+
+        .order-list {
+
+            /*
+       Ürünleri alt alta dizer.
+    */
+            display: flex;
+
+            /*
+       Flex elemanlarını dikey yönde sıralar.
+    */
+            flex-direction: column;
+
+            /* Ürünler arasındaki boşluk */
+            gap: 10px;
+        }
+
+        .order-item {
+
+            background: var(--bg);
+
+            border: 1px solid var(--border);
+
+            border-radius: 6px;
+
+            padding: 12px 14px;
+
+            /*
+       Ürün bilgilerinin sol,
+       kategori ve Sil butonunun sağda olmasını sağlar.
+    */
+            display: flex;
+
+            justify-content: space-between;
+
+            /*
+       İçerikleri dikey eksende ortalar.
+    */
+            align-items: center;
+        }
+
+
+        /* Ürün adı */
+        .order-item h5 {
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        /* Ürün fiyatı */
+        .order-item p {
+
+            font-size: 12px;
+
+            color: var(--muted);
+        }
+
+        .meta-box {
+
+            /*
+       Badge ve Sil butonunu yan yana getirir.
+    */
+            display: flex;
+
+            /* Dikey olarak ortalar */
+            align-items: center;
+
+            /* Aralarındaki boşluk */
+            gap: 10px;
+        }
+
+
+        .badge {
+
+            /*
+       Badge'in yazı boyutu.
+    */
+            font-size: 11px;
+
+            /* Badge'in içindeki boşluk */
+            padding: 2px 7px;
+
+            /* Köşeleri yuvarlatır */
+            border-radius: 4px;
+
+            font-weight: 600;
+
+            /* Varsayılan badge rengi */
+            background: #fef3c7;
+
+            color: #92400e;
+
+            /*
+       Kategori isimlerinin daha teknik/etiket görünmesini sağlar.
+    */
+            font-family: var(--font-mono);
+        }
+
+
+        /*
+   Mobilya kategorisinin özel görünümü.
+*/
+        .badge--mobilya {
+
+            background: #e0e7ff;
+
+            color: #3730a3;
+        }
+
+
+        /*
+   Aydınlatma kategorisinin özel görünümü.
+*/
+        .badge--aydinlatma {
+
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+
+        /*
+   Mutfak kategorisinin özel görünümü.
+*/
+        .badge--mutfak {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .btn-del {
+            /* Şeffaf arka plan. */
+            background: transparent;
+            /*  Butonun kenarlığı. */
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            /*  Mouse üzerine geldiğinde el işareti. */
+            cursor: pointer;
+        }
+
+        /*
+   Sil butonunun üzerine mouse geldiğinde
+   kırmızı renge dönüşür.
+*/
+        .btn-del:hover {
+            background: #ef4444;
+            color: #fff;
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <!--
+    Sayfanın ana kapsayıcısı.
+    Tüm dashboard/kokpit içeriğini bir arada tutar.
+-->
+    <div class="kokpit">
+
+        <!-- Sayfanın üst başlık bölümü -->
+        <header class="header">
+
+            <!--
+            Küçük üst başlık.
+            "Sipariş Takip" yazısını gösterir.
+        -->
+            <span class="header__tag">Sipariş Takip</span>
+
+            <!-- Ana sayfa başlığı -->
+            <h1 class="header__title">Sipariş Yönetim Kokpiti</h1>
+
+        </header>
+
+
+        <!-- KPI (Key Performance Indicator) kartlarının bulunduğu bölüm -->
+        <section class="kpi-grid">
+
+            <!-- 1. KPI kartı -->
+            <div class="kpi-card">
+
+                <!-- Kartın açıklaması -->
+                <span>Kayıtlı Sipariş</span>
+
+                <!--
+                JavaScript bu alanı güncelleyecek.
+                Örneğin: 5
+            -->
+                <h3 id="kpiCount">0</h3>
+
+            </div>
+
+
+            <!-- 2. KPI kartı -->
+            <div class="kpi-card">
+
+                <!-- Kartın açıklaması -->
+                <span>Toplam Sipariş Tutar</span>
+
+                <!--
+                JavaScript toplam fiyatı buraya yazacak.
+                Örneğin: 24.500₺
+            -->
+                <h3 id="kpiTotal">0₺</h3>
+
+            </div>
+
+
+            <!-- 3. KPI kartı -->
+            <div class="kpi-card">
+
+                <!-- Kartın açıklaması -->
+                <span>Ortalama Ürün Fiyatı</span>
+
+                <!--
+                JavaScript ortalama fiyatı buraya yazacak.
+                Örneğin: 4.900₺
+            -->
+                <h3 id="kpiAvg">0₺</h3>
+
+            </div>
+
+        </section>
+
+
+        <!--
+        Sayfanın ana içerik bölümü.
+        CSS'teki .layout sayesinde iki sütuna ayrılıyor:
+        Sol taraf → Yeni sipariş formu
+        Sağ taraf → Sipariş listesi
+    -->
+        <main class="layout">
+
+
+            <!-- ========================= -->
+            <!-- YENİ SİPARİŞ FORMU -->
+            <!-- ========================= -->
+
+            <section class="panel">
+
+                <!-- Panel başlığı -->
+                <h4>Yeni Sipariş Kaydı</h4>
+
+
+                <!--
+                Form başlangıcı.
+
+                id="orderForm" sayesinde JavaScript bu formu
+                document.getElementById("orderForm") ile bulabilir.
+
+                Form gönderildiğinde JavaScript çalışacak.
+            -->
+                <form id="orderForm">
+
+
+                    <!-- Ürün adı alanı -->
+                    <div class="field">
+
+                        <!--
+                        label kullanıcının hangi bilgiyi girmesi
+                        gerektiğini belirtir.
+
+                        for="prodName" ile input'un
+                        id="prodName" değeri eşleşiyor.
+                    -->
+                        <label for="prodName">Ürün Adı</label>
+
+
+                        <!--
+                        type="text"
+                        → Kullanıcı metin girebilir.
+
+                        id="prodName"
+                        → JavaScript bu inputu bulabilir.
+
+                        placeholder
+                        → Input boşken örnek metin gösterir.
+
+                        required
+                        → Bu alanın boş bırakılmasını engeller.
+                    -->
+                        <input type="text" id="prodName" placeholder="Sehpa" required>
+
+                    </div>
+
+
+                    <!-- Kategori alanı -->
+                    <div class="field">
+
+                        <!-- Kategori açıklaması -->
+                        <label for="prodCat">Kategori</label>
+
+
+                        <!--
+                        select:
+                        Kullanıcının seçeneklerden birini
+                        seçmesini sağlar.
+
+                        id="prodCat":
+                        JavaScript'in bu select elementine
+                        ulaşmasını sağlar.
+                    -->
+                        <select name="prodCat" id="prodCat">
+
+                            <!--
+                            value="Mobilya"
+
+                            Kullanıcı bu seçeneği seçerse
+                            JavaScript'te:
+
+                            prodCat.value
+
+                            sonucu "Mobilya" olur.
+                        -->
+                            <option value="Mobilya">
+                                Mobilya
+                            </option>
+
+                            <option value="Aydınlatma">
+                                Aydınlatma
+                            </option>
+
+                            <option value="Mutfak">
+                                Mutfak
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Fiyat alanı -->
+                    <div class="field">
+
+                        <!-- Fiyat açıklaması -->
+                        <label for="prodPrice">Fiyat</label>
+
+
+                        <!--
+                        type="number"
+                        → Sadece sayısal değer girmeye uygun input.
+
+                        id="prodPrice"
+                        → JavaScript'in inputu bulmasını sağlar.
+
+                        value="3250"
+                        → Input açıldığında başlangıç değeri 3250 olur.
+
+                        min="100"
+                        → En az 100 girilebilir.
+
+                        step="50"
+                        → Sayı 50'şer artacak şekilde ilerler.
+                        Örneğin:
+                        100
+                        150
+                        200
+                        250
+
+                        required
+                        → Boş bırakılamaz.
+                    -->
+                        <input type="number" id="prodPrice" value="3250" min="100" step="50" required>
+
+                    </div>
+
+
+                    <!--
+                    type="submit"
+
+                    Bu butona basıldığında form gönderilir.
+
+                    JavaScript'te:
+
+                    orderForm.addEventListener("submit", ...)
+
+                    kodu bu işlemi yakalar.
+                -->
+                    <button type="submit" class="btn-submit">
+                        Sipariş Kaydet
+                    </button>
+
+                </form>
+
+            </section>
+
+
+            <!-- ========================= -->
+            <!-- SİPARİŞ LİSTESİ -->
+            <!-- ========================= -->
+
+            <section class="panel">
+
+
+                <!--
+                Arama ve kategori filtrelerinin bulunduğu alan.
+            -->
+                <div class="filter-bar">
+
+
+                    <!--
+                    Ürün adına göre arama inputu.
+
+                    id="searchInput"
+
+                    JavaScript:
+
+                    searchInput.value
+
+                    ile kullanıcının yazdığı metni alabilir.
+                -->
+                    <input type="text" id="searchInput" class="field" style="margin-bottom: 0;"
+                        placeholder="Ürün Adına Göre Filtrele">
+
+
+                    <!--
+                    Kategori filtreleme select'i.
+                    Kullanıcı burada:
+                    - Tüm Kategoriler
+                    - Mobilya
+                    - Aydınlatma
+                    - Mutfak
+                    seçeneklerinden birini seçebilir.
+                -->
+                    <select id="categoryFilter" style="width: 130px; font-size: 12px; padding: 6px;">
+
+                        <!--
+                        value="ALL"
+
+                        JavaScript'te:
+
+                        selectedCat === "ALL"
+
+                        kontrolü yapıyoruz.
+
+                        Yani bu seçenek seçilirse
+                        kategori filtresi uygulanmıyor.
+                    -->
+                        <option value="ALL">
+                            Tüm Kategoriler
+                        </option>
+
+                        <option value="Mobilya">
+                            Mobilya
+                        </option>
+
+                        <option value="Aydınlatma">
+                            Aydınlatma
+                        </option>
+
+                        <option value="Mutfak">
+                            Mutfak
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!--
+                Siparişlerin dinamik olarak oluşturulacağı alan.
+
+                Başlangıçta boş.JavaScript içerisindeki:  orderContainer.innerHTML = ..    veya
+                orderContainer.appendChild(item)  kodları buraya ürünleri ekliyor.
+            -->
+                <div id="orderContainer" class="order-list">
+
+                    <!--
+                    Siparişler JavaScript tarafından
+                    dinamik olarak buraya eklenecek.
+                -->
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+    </div>
+
+
+
+    <script>
+
+        // =========================================================
+        // 1. BAŞLANGIÇ VERİLERİ
+        // =========================================================
+
+        // orders adında bir dizi oluşturuyoruz.
+        // Her ürün bir object (nesne) olarak tutuluyor.
+        let orders = [
+            {
+                id: 1,
+                name: "sehpa",
+                category: "Mobilya",
+                price: 6500
+            },
+            {
+                id: 2,
+                name: "abajür",
+                category: "Aydınlatma",
+                price: 7500
+            },
+            {
+                id: 3,
+                name: "koltuk",
+                category: "Mobilya",
+                price: 8500
+            },
+            {
+                id: 4,
+                name: "bulaşık makinesi",
+                category: "Mutfak",
+                price: 1000
+            },
+            {
+                id: 5,
+                name: "ocak",
+                category: "Mutfak",
+                price: 1500
+            }
+        ];
+
+
+        // =========================================================
+        // 2. DOM ELEMENTLERİNİ ALMA
+        // =========================================================
+
+        // HTML'deki id'si orderContainer olan elementi buluyoruz.
+        // Ürünleri daha sonra bu elementin içine ekleyeceğiz.
+        const orderContainer =
+            document.getElementById("orderContainer");
+
+
+        // Sipariş ekleme formunu alıyoruz.
+        const orderForm =
+            document.getElementById("orderForm");
+
+
+        // Ürün adı inputunu alıyoruz.
+        const prodName =
+            document.getElementById("prodName");
+
+
+        // Kategori select elementini alıyoruz.
+        const prodCat =
+            document.getElementById("prodCat");
+
+
+        // Fiyat inputunu alıyoruz.
+        const prodPrice =
+            document.getElementById("prodPrice");
+
+
+        // Arama inputunu alıyoruz.
+        const searchInput =
+            document.getElementById("searchInput");
+
+
+        // Kategori filtreleme selectini alıyoruz.
+        const categoryFilter =
+            document.getElementById("categoryFilter");
+
+
+        // KPI alanlarını alıyoruz.
+        const kpiCount =
+            document.getElementById("kpiCount");
+
+        const kpiTotal =
+            document.getElementById("kpiTotal");
+
+        const kpiAvg =
+            document.getElementById("kpiAvg");
+
+
+        // =========================================================
+        // 3. KPI'LARI GÜNCELLEME
+        // =========================================================
+
+        // dataList parametresi olarak elimizdeki ürün listesini alıyoruz.
+        const updateKPIs = (dataList) => {
+
+            // Kaç tane ürün olduğunu hesaplıyoruz.
+            // length dizinin eleman sayısını verir.
+            kpiCount.textContent = dataList.length;
+
+
+            // Eğer hiç ürün yoksa toplam ve ortalamayı 0 yapıyoruz.
+            if (dataList.length === 0) {
+
+                kpiTotal.textContent = "0₺";
+                kpiAvg.textContent = "0₺";
+
+                // Fonksiyonu burada bitiriyoruz.
+                return;
+            }
+
+
+            // =====================================================
+            // REDUCE
+            // =====================================================
+
+            // reduce() dizideki bütün fiyatları toplamak için kullanılıyor.
+            //
+            // acc  -> accumulator (biriken toplam)
+            // curr -> current (o anda üzerinde olduğumuz ürün)
+            // 0    -> başlangıç değeri
+            //
+            // Örneğin:
+            // 6500 + 7500 + 8500 + 1000 + 1500
+            //
+            // sonucunda total = 25000 olur.
+
+            const total = dataList.reduce(
+                (acc, curr) => acc + curr.price,
+                0
+            );
+
+
+            // Toplam fiyatı HTML'e yazıyoruz.
+            //
+            // toLocaleString("tr-TR")
+            // sayıyı Türkiye formatına çevirir.
+            //
+            // 25000
+            // ↓
+            // 25.000
+
+            kpiTotal.textContent =
+                `${total.toLocaleString("tr-TR")}₺`;
+
+
+            // =====================================================
+            // ORTALAMA
+            // =====================================================
+
+            // Toplam fiyatı ürün sayısına bölerek
+            // ortalama fiyatı buluyoruz.
+
+            const avg =
+                total / dataList.length;
+
+
+            // Math.round() küsuratı yuvarlar.
+            //
+            // Örneğin:
+            // 5000.75 → 5001
+
+            kpiAvg.textContent =
+                `${Math.round(avg).toLocaleString("tr-TR")}₺`;
+        };
+
+
+        // =========================================================
+        // 4. ÜRÜNLERİ EKRANA BASMA
+        // =========================================================
+
+        const renderOrders = () => {
+
+            // Kullanıcının arama kutusuna yazdığı değeri alıyoruz.
+            const term =
+                searchInput.value
+                    .toLowerCase()
+                    .trim();
+
+
+            // Kullanıcının seçtiği kategoriyi alıyoruz.
+            const selectedCat =
+                categoryFilter.value;
+
+
+            // =====================================================
+            // FILTER
+            // =====================================================
+
+            // orders dizisini filtreliyoruz.
+            //
+            // filter() mevcut diziyi değiştirmez.
+            // Şartı sağlayan elemanlardan YENİ bir dizi oluşturur.
+
+            const filtered = orders.filter(order => {
+
+
+                // Ürün adını küçük harfe çeviriyoruz.
+                //
+                // Böylece:
+                // "Masa"
+                // "masa"
+                //
+                // aynı şekilde karşılaştırılabilir.
+
+                const matchesName =
+                    order.name
+                        .toLowerCase()
+                        .includes(term);
+
+
+                // Seçilen kategori "ALL" ise
+                // bütün kategorileri kabul ediyoruz.
+                //
+                // Değilse ürünün kategorisi ile
+                // seçilen kategoriyi karşılaştırıyoruz.
+
+                const matchesCategory =
+                    selectedCat === "ALL" ||
+                    order.category === selectedCat;
+
+
+                // İki şartın da doğru olması gerekiyor.
+                //
+                // && = VE
+
+                return matchesName && matchesCategory;
+            });
+
+
+            // Önce ekrandaki mevcut ürünleri temizliyoruz.
+            orderContainer.innerHTML = "";
+
+
+            // Eğer filtreleme sonucunda ürün kalmadıysa
+            // kullanıcıya mesaj gösteriyoruz.
+
+            if (filtered.length === 0) {
+
+                orderContainer.innerHTML = `
+                <div style="
+                    padding:24px;
+                    text-align:center;
+                    color:var(--muted);
+                    font-size:12px;
+                ">
+                    Kriterlere uygun ürün bulunamadı
+                </div>
+            `;
+
+
+                // KPI'ları da sıfırlıyoruz.
+                updateKPIs([]);
+
+
+                // Fonksiyonu burada bitiriyoruz.
+                return;
+            }
+
+
+            // =====================================================
+            // FOREACH
+            // =====================================================
+
+            // Filtrelenmiş ürünlerin her biri için
+            // HTML elementi oluşturuyoruz.
+
+            filtered.forEach(order => {
+
+
+                // Yeni bir <article> elementi oluşturuyoruz.
+                const item =
+                    document.createElement("article");
+
+
+                // Oluşturduğumuz article'a
+                // order-item CSS classını veriyoruz.
+
+                item.className = "order-item";
+
+
+                // HTML elementine ürünün ID'sini
+                // data-id olarak ekliyoruz.
+
+                item.setAttribute(
+                    "data-id",
+                    order.id
+                );
+
+
+                // =================================================
+                // KATEGORİYE GÖRE BADGE CLASS'I
+                // =================================================
+
+                let badgeClass = "";
+
+
+                // Eğer kategori Mobilya ise
+                // badge--mobilya classını kullan.
+
+                if (order.category === "Mobilya") {
+
+                    badgeClass = "badge--mobilya";
+
+
+                    // Eğer kategori Aydınlatma ise
+                    // badge--aydinlatma classını kullan.
+
+                } else if (order.category === "Aydınlatma") {
+
+                    badgeClass = "badge--aydinlatma";
+
+
+                    // Eğer kategori Mutfak ise
+                    // badge--mutfak classını kullan.
+
+                } else if (order.category === "Mutfak") {
+
+                    badgeClass = "badge--mutfak";
+                }
+
+
+                // =================================================
+                // INNERHTML
+                // =================================================
+
+                // JavaScript ile HTML oluşturuyoruz.
+
+                item.innerHTML = `
+                <div>
+
+                    <h5>
+                        ${order.name}
+                    </h5>
+
+                    <p>
+                        Birim Fiyat:
+                        ${order.price.toLocaleString("tr-TR")}₺
+                    </p>
+
+                </div>
+
+                <div class="meta-box">
+
+                    <span class="badge ${badgeClass}">
+                        ${order.category}
+                    </span>
+
+                    <button
+                        class="btn-del"
+                        data-action="delete"
+                        data-id="${order.id}">
+                        Sil
+                    </button>
+
+                </div>
+            `;
+
+
+                // Oluşturduğumuz ürünü
+                // orderContainer'ın içine ekliyoruz.
+
+                orderContainer.appendChild(item);
+            });
+
+
+            // Liste ekrana basıldıktan sonra
+            // KPI değerlerini güncelliyoruz.
+
+            updateKPIs(filtered);
+        };
+
+
+        // =========================================================
+        // 5. ÜRÜN EKLEME
+        // =========================================================
+
+        // Form gönderildiğinde çalışır.
+        orderForm.addEventListener("submit", (event) => {
+
+
+            // Form submit olduğunda sayfanın yenilenmesini engeller.
+            //
+            // Normalde form gönderildiğinde browser sayfayı yenileyebilir.
+            // Biz JavaScript ile işlemi kendimiz yapacağımız için
+            // bunu engelliyoruz.
+
+            event.preventDefault();
+
+
+            // Input içerisindeki ürün adını alıyoruz.
+            //
+            // trim() baştaki ve sondaki boşlukları temizler.
+
+            const name =
+                prodName.value.trim();
+
+
+            // Seçilen kategoriyi alıyoruz.
+
+            const category =
+                prodCat.value;
+
+
+            // Fiyat inputundan gelen değer STRING'dir.
+            //
+            // Number() ile NUMBER'a çeviriyoruz.
+
+            const price =
+                Number(prodPrice.value);
+
+
+            // =====================================================
+            // BASİT VALIDATION
+            // =====================================================
+
+            // Ürün adı boşsa veya fiyat geçerli değilse
+            // işlemi durduruyoruz.
+
+            if (!name || !price) {
+                return;
+            }
+
+
+            // =====================================================
+            // YENİ ID OLUŞTURMA
+            // =====================================================
+
+            // orders dizisindeki en büyük ID'yi buluyoruz.
+            //
+            // Math.max(...orders.map(...))
+            //
+            // Örneğin:
+            // [1, 2, 3, 4, 5]
+            //
+            // sonucunda:
+            // 5
+            //
+            // Daha sonra +1 yapıyoruz:
+            // 6
+
+            const newId =
+                orders.length > 0
+                    ? Math.max(
+                        ...orders.map(order => order.id)
+                    ) + 1
+                    : 1;
+
+
+            // Yeni ürün objesi oluşturuyoruz.
+
+            const newOrder = {
+                id: newId,
+                name: name,
+                category: category,
+                price: price
+            };
+
+
+            // =====================================================
+            // PUSH
+            // =====================================================
+
+            // Yeni ürünü orders dizisinin sonuna ekliyoruz.
+
+            orders.push(newOrder);
+
+
+            // Formu temizliyoruz.
+
+            orderForm.reset();
+
+
+            // Fiyat inputunu tekrar 3250 yapıyoruz.
+
+            prodPrice.value = 3250;
+
+
+            // Yeni ürün listeye eklendiği için
+            // ekranı tekrar render ediyoruz.
+
+            renderOrders();
+        });
+
+
+        // =========================================================
+        // 6. ÜRÜN SİLME
+        // =========================================================
+
+        // orderContainer üzerinde click eventini dinliyoruz.
+        //
+        // Buna EVENT DELEGATION denir.
+        //
+        // Çünkü ürünler JavaScript ile sonradan oluşturulduğu için
+        // her butona ayrı ayrı event listener vermek yerine
+        // parent element üzerinden tıklamayı yakalıyoruz.
+
+        orderContainer.addEventListener("click", (event) => {
+
+
+            // Tıklanan elementin kendisi veya
+            // üst elementlerinden biri
+            // data-action="delete" olan elementi buluyoruz.
+
+            const deleteButton =
+                event.target.closest(
+                    '[data-action="delete"]'
+                );
+
+
+            // Eğer tıklanan yer Sil butonu değilse
+            // hiçbir şey yapma.
+
+            if (!deleteButton) {
+                return;
+            }
+
+
+            // HTML'deki data-id değerini alıyoruz.
+            //
+            // dataset.id bize STRING döndürür.
+            //
+            // Number() ile NUMBER'a çeviriyoruz.
+
+            const id =
+                Number(deleteButton.dataset.id);
+
+
+            // =====================================================
+            // FILTER İLE SİLME
+            // =====================================================
+
+            // Silmek istediğimiz ID dışındaki
+            // bütün ürünleri tutuyoruz.
+
+            orders = orders.filter(
+                order => order.id !== id
+            );
+
+
+            // orders dizisi değiştiği için
+            // listeyi tekrar oluşturuyoruz.
+
+            renderOrders();
+        });
+
+
+        // =========================================================
+        // 7. ARAMA
+        // =========================================================
+
+        // Kullanıcı arama inputuna her yazı yazdığında
+        // renderOrders çalışır.
+
+        searchInput.addEventListener(
+            "input",
+            renderOrders
+        );
+
+
+        // =========================================================
+        // 8. KATEGORİ FİLTRESİ
+        // =========================================================
+
+        // Kullanıcı kategori seçimini değiştirdiğinde
+        // renderOrders çalışır.
+
+        categoryFilter.addEventListener(
+            "change",
+            renderOrders
+        );
+
+
+        // =========================================================
+        // 9. SAYFA İLK AÇILDIĞINDA
+        // =========================================================
+
+        // Sayfa açıldığı anda mevcut orders dizisini
+        // ekrana basıyoruz.
+
+        renderOrders();
+
+    </script>
+
+
+
+</body>
+
+</html>

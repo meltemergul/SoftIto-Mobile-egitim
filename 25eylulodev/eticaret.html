@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sade & Saf JS E-Ticaret Kataloğu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Üst Bar (Header) -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                🛒 MiniPack
+            </div>
+
+            <!-- Canlı Arama Kutusu -->
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Ürün ismi ile ara...">
+            </div>
+
+            <!-- Sepet Açma Butonu -->
+            <button class="cart-btn" id="openCartBtn">
+                <span>Sepetim</span>
+                <span class="cart-badge" id="cartBadge">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Ana İçerik Düzeneği -->
+    <div class="main-container">
+
+        <!-- Sol Filtre Paneli -->
+        <aside class="sidebar">
+            <div class="filter-group">
+                <h3>Kategoriler</h3>
+                <div class="category-options" id="categoryContainer">
+                    <label><input type="radio" name="category" value="hepsi" checked> Hepsi</label>
+                    <label><input type="radio" name="category" value="elektronik"> Elektronik</label>
+                    <label><input type="radio" name="category" value="giyim"> Giyim</label>
+                    <label><input type="radio" name="category" value="aksesuar"> Aksesuar</label>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h3>Maksimum Fiyat</h3>
+                <input type="range" id="priceRange" class="price-range" min="0" max="10000" step="100" value="10000">
+                <div class="price-labels">
+                    <span>0 ₺</span>
+                    <span id="priceLabel">10000 ₺</span>
+                </div>
+            </div>
+
+            <button class="btn-clear" id="resetFiltersBtn">Filtreleri Sıfırla</button>
+        </aside>
+
+        <!-- Ürünler ve Sıralama Alanı -->
+        <main class="content-area">
+            <div class="top-bar">
+                <span id="productCount" style="color: var(--text-muted); font-size: 0.9rem;">8 ürün bulundu</span>
+
+                <select id="sortSelect" class="sort-select">
+                    <option value="default">Sıralama: Önerilen</option>
+                    <option value="price-low">Fiyat: Düşükten Yükseğe</option>
+                    <option value="price-high">Fiyat: Yüksekten Düşüğe</option>
+                    <option value="name-az">İsim: A-Z</option>
+                </select>
+            </div>
+
+            <!-- Dinamik Ürün Kartları Burada Oluşacak -->
+            <div class="product-grid" id="productGrid"></div>
+        </main>
+
+    </div>
+
+    <!-- Sepet Yan Paneli (Drawer) -->
+    <div class="cart-drawer-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h3>Alışveriş Sepeti</h3>
+            <button class="close-cart" id="closeCartBtn">&times;</button>
+        </div>
+
+        <div class="cart-items" id="cartItems">
+            <!-- Sepet elemanları JS ile buraya yüklenecek -->
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span>Toplam:</span>
+                <span id="cartTotal">0.00 ₺</span>
+            </div>
+            <button class="btn-checkout" id="checkoutBtn">Siparişi Tamamla</button>
+        </div>
+    </div>
+
+    <!-- Bildirimler Kutusu -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        /* ==========================================================================
+           1. VERİ YAPISI (PRODUCTS DATA)
+           Öğrenme Notu: Gerçek projelerde bu veri bir sunucudan (API) gelir.
+           Burada objelerden oluşan bir dizi (Array of Objects) kullanıyoruz.
+           ========================================================================== */
+        const products = [
+            { id: 1, title: "Kablosuz Kulaklık", category: "elektronik", price: 1200, rating: 4.8, icon: "🎧" },
+            { id: 2, title: "Akıllı Saat", category: "elektronik", price: 3500, rating: 4.6, icon: "⌚" },
+            { id: 3, title: "Pamuklu T-Shirt", category: "giyim", price: 350, rating: 4.2, icon: "👕" },
+            { id: 4, title: "Kot Ceket", category: "giyim", price: 1250, rating: 4.5, icon: "🧥" },
+            { id: 5, title: "Sırt Çantası", category: "aksesuar", price: 850, rating: 4.7, icon: "🎒" },
+            { id: 6, title: "Güneş Gözlüğü", category: "aksesuar", price: 600, rating: 4.1, icon: "🕶️" },
+            { id: 7, title: "Mekanik Klavye", category: "elektronik", price: 2100, rating: 4.9, icon: "⌨️" },
+            { id: 8, title: "Spor Ayakkabı", category: "giyim", price: 2800, rating: 4.4, icon: "👟" }
+        ];
+
+        /* ==========================================================================
+           2. UYGULAMA DURUMU (STATE)
+           Öğrenme Notu: Uygulamanın anlık hafızasıdır. Sepet listesi, aktif filtreler
+           burada tutulur.
+           ========================================================================== */
+        let cart = []; // Sepetteki ürünler dizisi
+        let activeCategory = 'hepsi';
+        let maxPrice = 10000;
+        let searchQuery = '';
+        let sortOption = 'default';
+
+        /* ==========================================================================
+           3. DOM ELEMANLARINI SEÇME (DOM SELECTION)
+           Öğrenme Notu: HTML elemanlarına JS üzerinden ulaşmak için document.getElementById
+           veya document.querySelector kullanılır.
+           ========================================================================== */
+        const productGrid = document.getElementById('productGrid');
+        const searchInput = document.getElementById('searchInput');
+        const priceRange = document.getElementById('priceRange');
+        const priceLabel = document.getElementById('priceLabel');
+        const sortSelect = document.getElementById('sortSelect');
+        const productCount = document.getElementById('productCount');
+        const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+        const categoryContainer = document.getElementById('categoryContainer');
+
+        // Sepet Elemanları
+        const openCartBtn = document.getElementById('openCartBtn');
+        const closeCartBtn = document.getElementById('closeCartBtn');
+        const cartDrawer = document.getElementById('cartDrawer');
+        const cartOverlay = document.getElementById('cartOverlay');
+        const cartItems = document.getElementById('cartItems');
+        const cartTotal = document.getElementById('cartTotal');
+        const cartBadge = document.getElementById('cartBadge');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+
+        /* ==========================================================================
+           4. EKRANA ÜRÜNLERİ BASTIRMA (RENDER PRODUCTS)
+           Öğrenme Notu: Array.filter() ve Array.sort() gibi JS metodları ile veriyi
+           işleyip template string (```) yardımıyla HTML üretiyoruz.
+           ========================================================================== */
+        function renderProducts() {
+            // 1. Filtreleme İşlemi (filter metodu)
+            let filtered = products.filter(product => {
+                const matchesCategory = activeCategory === 'hepsi' || product.category === activeCategory;
+                const matchesPrice = product.price <= maxPrice;
+                const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
+
+                return matchesCategory && matchesPrice && matchesSearch;
+            });
+
+            // 2. Sıralama İşlemi (sort metodu)
+            if (sortOption === 'price-low') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (sortOption === 'price-high') {
+                filtered.sort((a, b) => b.price - a.price);
+            } else if (sortOption === 'name-az') {
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
+            }
+
+            // Sayı Güncelleme
+            productCount.textContent = `${filtered.length} ürün bulundu`;
+
+            // Eğer ürün bulunamadıysa uyarı göster
+            if (filtered.length === 0) {
+                productGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">Aradığınız kriterlere uygun ürün bulunamadı.</p>`;
+                return;
+            }
+
+            // 3. HTML Yapısını Oluşturma ve Ekrana Ekleme
+            productGrid.innerHTML = filtered.map(product => `
+                <div class="product-card">
+                    <div>
+                        <div class="product-image">${product.icon}</div>
+                        <div class="product-category">${product.category}</div>
+                        <h4 class="product-title">${product.title}</h4>
+                        <div class="product-rating">★ ${product.rating}</div>
+                    </div>
+                    <div class="product-bottom">
+                        <span class="product-price">${product.price} ₺</span>
+                        <!-- onclick üzerinde doğrudan fonksiyon çağırıyoruz -->
+                        <button class="btn-add-cart" onclick="addToCart(${product.id})">Ekle</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /* ==========================================================================
+           5. SEPET İŞLEMLERİ (CART FUNCTIONS)
+           Öğrenme Notu: Array.find(), Array.reduce() gibi metodları kullanarak 
+           sepet mantığını yönetiyoruz.
+           ========================================================================== */
+
+        // Sepete Ekleme
+        function addToCart(productId) {
+            // Ürün sepette var mı kontrol et (find metodu)
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1; // Varsa miktarını artır
+            } else {
+                // Yoksa orijinal listeden ürünü bul ve sepete miktar 1 olacak şekilde ekle
+                const product = products.find(p => p.id === productId);
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCartUI();
+            showToast("Ürün sepete eklendi!");
+        }
+
+        // Miktar Değiştirme (+ / -)
+        function changeQuantity(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (!item) return;
+
+            item.quantity += delta;
+
+            // Miktar 0 veya altına düşerse sepetten çıkar
+            if (item.quantity <= 0) {
+                removeFromCart(productId);
+            } else {
+                updateCartUI();
+            }
+        }
+
+        // Sepetten Tamamen Silme
+        function removeFromCart(productId) {
+            // filter metodu ile o id'ye sahip olmayanları koruyoruz (silme mantığı)
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+            showToast("Ürün sepetten çıkarıldı.");
+        }
+
+        // Sepet Arayüzünü Güncelleme
+        function updateCartUI() {
+            // 1. Toplam Eleman Sayısı Hesaplama (reduce metodu)
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartBadge.textContent = totalCount;
+
+            // 2. Toplam Fiyat Hesaplama
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotal.textContent = `${totalPrice.toFixed(2)} ₺`;
+
+            // 3. Sepet Boş mu Kontrolü
+            if (cart.length === 0) {
+                cartItems.innerHTML = `<p class="empty-cart-msg">Sepetiniz henüz boş.</p>`;
+                return;
+            }
+
+            // 4. Sepet Elemanlarını Çizme
+            cartItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-img">${item.icon}</div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.title}</div>
+                        <div class="cart-item-price">${item.price * item.quantity} ₺</div>
+                        <div class="cart-item-controls">
+                            <button class="btn-qty" onclick="changeQuantity(${item.id}, -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="btn-qty" onclick="changeQuantity(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                    <button class="btn-delete" onclick="removeFromCart(${item.id})">Sil</button>
+                </div>
+            `).join('');
+        }
+
+        /* ==========================================================================
+           6. BİLDİRİM (TOAST) SİSTEMİ
+           Öğrenme Notu: Dinamik olarak yeni bir HTML elemanı (div) oluşturup ekrana
+           ekliyor ve süre sonunda kaldırıyoruz.
+           ========================================================================== */
+        function showToast(message) {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+
+            toastContainer.appendChild(toast);
+
+            // 3 saniye sonra bildirim kutusunu DOM'dan temizle
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        /* ==========================================================================
+           7. OLAY DİNLEYİCİLERİ (EVENT LISTENERS)
+           Öğrenme Notu: Kullanıcının tıklama, yazma, kaydırma gibi eylemlerini
+           dinlediğimiz yapı.
+           ========================================================================== */
+
+        // Arama inputu değiştiğinde
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderProducts();
+        });
+
+        // Fiyat Aralığı Slider'ı değiştiğinde
+        priceRange.addEventListener('input', (e) => {
+            maxPrice = Number(e.target.value);
+            priceLabel.textContent = `${maxPrice} ₺`;
+            renderProducts();
+        });
+
+        // Kategori radyo butonları değiştiğinde
+        categoryContainer.addEventListener('change', (e) => {
+            if (e.target.name === 'category') {
+                activeCategory = e.target.value;
+                renderProducts();
+            }
+        });
+
+        // Sıralama seçeneği değiştiğinde
+        sortSelect.addEventListener('change', (e) => {
+            sortOption = e.target.value;
+            renderProducts();
+        });
+
+        // Filtreleri Sıfırla Butonu
+        resetFiltersBtn.addEventListener('click', () => {
+            activeCategory = 'hepsi';
+            maxPrice = 10000;
+            searchQuery = '';
+            sortOption = 'default';
+
+            // Form Elemanlarını Sıfırla
+            document.querySelector('input[name="category"][value="hepsi"]').checked = true;
+            priceRange.value = 10000;
+            priceLabel.textContent = '10000 ₺';
+            searchInput.value = '';
+            sortSelect.value = 'default';
+
+            renderProducts();
+        });
+
+        // Sepet Açma / Kapama Modal Kontrolleri
+        openCartBtn.addEventListener('click', () => {
+            cartDrawer.classList.add('open');
+            cartOverlay.classList.add('active');
+        });
+
+        function closeCart() {
+            cartDrawer.classList.remove('open');
+            cartOverlay.classList.remove('active');
+        }
+
+        closeCartBtn.addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', closeCart);
+
+        // Siparişi Tamamla Butonu
+        checkoutBtn.addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert("Sepetiniz boş! Lütfen önce ürün ekleyin.");
+                return;
+            }
+            alert("Siparişiniz alındı! Alışverişiniz için teşekkür ederiz.");
+            cart = [];
+            updateCartUI();
+            closeCart();
+        });
+
+        /* ==========================================================================
+           8. UYGULAMAYI BAŞLATMA (INIT)
+           ========================================================================== */
+        renderProducts();
+        updateCartUI();
+    </script>
+</body>
+
+</html>
