@@ -1,4 +1,4 @@
-📱 SoftITO Mobile Developer Eğitimi
+# 📱 SoftITO Mobile Developer Eğitimi
 
 Bu repository, SoftITO Mobile Developer Eğitimi kapsamında gerçekleştirilen ders çalışmaları, uygulamalar, ödevler ve pratikleri içermektedir.
 
@@ -6,4 +6,4 @@ Eğitim sürecinde mobil uygulama geliştirme temellerinin yanı sıra Dart, Flu
 
 ---
 
-📱 Mobile Development | 💙 Flutter | 🎯 Dart
+## 📱 Mobile Development | 💙 Flutter | 🎯 Dart
